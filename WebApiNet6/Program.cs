@@ -23,6 +23,7 @@ builder.Services.AddDbContext<BookStoreContext>(option =>
 {
     option.UseSqlServer(connectionString);
 });
+builder.Services.AddAutoMapper(typeof(Program));
 
 var app = builder.Build();
 
