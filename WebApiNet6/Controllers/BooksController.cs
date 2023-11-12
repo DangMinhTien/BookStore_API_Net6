@@ -1,11 +1,10 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
-using Microsoft.AspNetCore.Http;
+﻿using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
+using SQLitePCL;
 using WebApiNet6.Data;
+using WebApiNet6.Models;
+using WebApiNet6.Repositories;
 
 namespace WebApiNet6.Controllers
 {
@@ -13,111 +12,88 @@ namespace WebApiNet6.Controllers
     [ApiController]
     public class BooksController : ControllerBase
     {
+        private readonly IBookRepository _bookRepository;
         private readonly BookStoreContext _context;
 
-        public BooksController(BookStoreContext context)
+        public BooksController(IBookRepository bookRepository, BookStoreContext context)
         {
+            _bookRepository = bookRepository;
             _context = context;
         }
-
-        // GET: api/Books
         [HttpGet]
-        public async Task<ActionResult<IEnumerable<Book>>> GetBooks()
+        public async Task<IActionResult> GetAllBook()
         {
-          if (_context.Books == null)
-          {
-              return NotFound();
-          }
-            return await _context.Books.ToListAsync();
-        }
-
-        // GET: api/Books/5
-        [HttpGet("{id}")]
-        public async Task<ActionResult<Book>> GetBook(int id)
-        {
-          if (_context.Books == null)
-          {
-              return NotFound();
-          }
-            var book = await _context.Books.FindAsync(id);
-
-            if (book == null)
-            {
-                return NotFound();
-            }
-
-            return book;
-        }
-
-        // PUT: api/Books/5
-        // To protect from overposting attacks, see https://go.microsoft.com/fwlink/?linkid=2123754
-        [HttpPut("{id}")]
-        public async Task<IActionResult> PutBook(int id, Book book)
-        {
-            if (id != book.Id)
-            {
-                return BadRequest();
-            }
-
-            _context.Entry(book).State = EntityState.Modified;
-
             try
             {
-                await _context.SaveChangesAsync();
+                var books = await _bookRepository.GetAllBookAsync();
+                return Ok(books);
             }
-            catch (DbUpdateConcurrencyException)
+            catch (Exception ex)
             {
-                if (!BookExists(id))
-                {
-                    return NotFound();
-                }
-                else
-                {
-                    throw;
-                }
+                return BadRequest(ex.Message);
             }
-
-            return NoContent();
         }
-
-        // POST: api/Books
-        // To protect from overposting attacks, see https://go.microsoft.com/fwlink/?linkid=2123754
-        [HttpPost]
-        public async Task<ActionResult<Book>> PostBook(Book book)
+        [HttpGet("{id}")]
+        public async Task<IActionResult> GetBookById(int id)
         {
-          if (_context.Books == null)
-          {
-              return Problem("Entity set 'BookStoreContext.Books'  is null.");
-          }
-            _context.Books.Add(book);
-            await _context.SaveChangesAsync();
-
-            return CreatedAtAction("GetBook", new { id = book.Id }, book);
+            try
+            {
+                var book = await _bookRepository.GetBookAsync(id);
+                if(book == null)
+                    return NotFound();
+                return Ok(book);
+            }
+            catch (Exception ex)
+            {
+                return BadRequest(ex.Message);
+            }
         }
-
-        // DELETE: api/Books/5
+        [HttpPost]
+        public async Task<IActionResult> AddBook(BookModel bookmodel)
+        {
+            try
+            {
+                var newBookId = await _bookRepository.AddBookAsync(bookmodel);
+                return StatusCode(StatusCodes.Status201Created, 
+                    _context.Books.FirstOrDefault(b => b.Id == newBookId));
+            }
+            catch (Exception ex)
+            {
+                return BadRequest(ex.Message);
+            }
+        }
+        [HttpPut("{id}")]
+        public async Task<IActionResult> UpdateBook(int id, BookModel bookmodel)
+        {
+            try
+            {
+                if(id != bookmodel.Id)
+                {
+                    return BadRequest("khác id");
+                }
+                await _bookRepository.UpdateBookAsync(id, bookmodel);
+                return StatusCode(StatusCodes.Status204NoContent);
+            }
+            catch (Exception ex)
+            {
+                return BadRequest(ex.Message);
+            }
+        }
         [HttpDelete("{id}")]
         public async Task<IActionResult> DeleteBook(int id)
         {
-            if (_context.Books == null)
-            {
-                return NotFound();
-            }
-            var book = await _context.Books.FindAsync(id);
+            var book = await _context.Books.FirstOrDefaultAsync(b => b.Id == id);
             if (book == null)
-            {
                 return NotFound();
+            try
+            {
+                await _bookRepository.DeleteBookAsync(id);
+                return NoContent();
             }
-
-            _context.Books.Remove(book);
-            await _context.SaveChangesAsync();
-
-            return NoContent();
-        }
-
-        private bool BookExists(int id)
-        {
-            return (_context.Books?.Any(e => e.Id == id)).GetValueOrDefault();
+            catch (Exception ex)
+            {
+                return BadRequest(ex.Message);
+            }
         }
     }
 }

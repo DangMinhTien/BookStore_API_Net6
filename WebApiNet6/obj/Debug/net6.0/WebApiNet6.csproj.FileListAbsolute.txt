@@ -275,3 +275,5 @@ C:\Users\LENOVO\OneDrive\Documents\Wordspace\AspNet\API\WebApiNet6\WebApiNet6\bi
 C:\Users\LENOVO\OneDrive\Documents\Wordspace\AspNet\API\WebApiNet6\WebApiNet6\bin\Debug\net6.0\runtimes\win\lib\net6.0\System.Drawing.Common.dll
 C:\Users\LENOVO\OneDrive\Documents\Wordspace\AspNet\API\WebApiNet6\WebApiNet6\bin\Debug\net6.0\runtimes\win\lib\net6.0\System.Security.Cryptography.ProtectedData.dll
 C:\Users\LENOVO\OneDrive\Documents\Wordspace\AspNet\API\WebApiNet6\WebApiNet6\bin\Debug\net6.0\runtimes\win\lib\net6.0\System.Windows.Extensions.dll
+C:\Users\LENOVO\OneDrive\Documents\Wordspace\AspNet\API\WebApiNet6\WebApiNet6\bin\Debug\net6.0\AutoMapper.dll
+C:\Users\LENOVO\OneDrive\Documents\Wordspace\AspNet\API\WebApiNet6\WebApiNet6\bin\Debug\net6.0\AutoMapper.Extensions.Microsoft.DependencyInjection.dll
