@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Http;
+﻿using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using SQLitePCL;
@@ -49,6 +50,7 @@ namespace WebApiNet6.Controllers
             }
         }
         [HttpPost]
+        [Authorize]
         public async Task<IActionResult> AddBook(BookModel bookmodel)
         {
             try
@@ -63,6 +65,7 @@ namespace WebApiNet6.Controllers
             }
         }
         [HttpPut("{id}")]
+        [Authorize]
         public async Task<IActionResult> UpdateBook(int id, BookModel bookmodel)
         {
             try
@@ -80,6 +83,7 @@ namespace WebApiNet6.Controllers
             }
         }
         [HttpDelete("{id}")]
+        [Authorize]
         public async Task<IActionResult> DeleteBook(int id)
         {
             var book = await _context.Books.FirstOrDefaultAsync(b => b.Id == id);

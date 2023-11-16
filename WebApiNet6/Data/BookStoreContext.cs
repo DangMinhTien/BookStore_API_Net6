@@ -1,8 +1,9 @@
-﻿using Microsoft.EntityFrameworkCore;
+﻿using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore;
 
 namespace WebApiNet6.Data
 {
-    public class BookStoreContext : DbContext
+    public class BookStoreContext : IdentityDbContext<AppUser>
     {
         public BookStoreContext(DbContextOptions<BookStoreContext> opt) : base(opt)
         {
